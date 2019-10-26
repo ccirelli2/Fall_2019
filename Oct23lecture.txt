@@ -1,0 +1,32 @@
+Text Documents:
+
+Bag of words:		impartial to the oder of the words.  Just a mixed bag of words.
+			words lose their meaning.  Hotel & Motel have 0 similarity in bag of words. 
+ 
+Tf-idf Matrix:		term frequency matrix
+			idf = if a word appears a lot of times it is discounted. 
+			idf = # documents / # documents containing word
+
+*Idea			What about setting up a matrix to compare the connectivity of words in a document and 
+			try to see if there is a difference in the connectivity between two document types.
+			We could use a clustering algorith to see this. 
+
+Markov Assumption	Uses conditional probabilities to calculate the next word.  Markov Assumption
+			uses a window of only so many words. 
+
+Skip Gram		Given context word, what is the word that comes before or after. 
+
+
+Embedding layer		convert one hot encoding into dense layer?
+
+
+Cosine Similarity	You can either use the distance between two angels or the angel. 
+			Cosine is better as it not affected by the frequency of the words.
+
+Singular value decomposition
+	
+
+LSA?		 
+
+
+

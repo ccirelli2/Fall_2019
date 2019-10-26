@@ -1,0 +1,40 @@
+Second Project ------------------------------------------------------------
+
+		Text classification
+		LD Traditional 
+		Dynamic topic model
+		Structure topic model
+		
+
+
+Identifying Forged Images from GANs----------------------------------------
+
+Topic:		How do you identify forged images. 
+GAN		General adversarial network. 
+		This person does not exist.com
+Two sides	Generator - 		lier or counterfiter
+		Discriminator - 	lie detector or a detector to find it the counterfit is
+					real. 
+		See deepfake.com
+
+LCRN		Learning automata and Clustering based Routing Algorithm. 
+
+Afine Warp	
+
+
+Yusen's Presentation -------------------------------------------------------
+
+RELU		Most useful activation function.  Sigmoid does not do well for 
+		many reasons. 
+		f(u) = max(0,u)
+		Prevents the gradient vanishing problem. 
+		gradient exploding = you set a threshold and if the gradient is above
+		you clip it. 
+
+		** How does RELU create a non-linear function?
+
+
+Softmax		used in the output later for functions with multiple targets as opposed
+		to binary
+
+Chain rule	review

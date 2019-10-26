@@ -1,0 +1,128 @@
+CHAPTER 9 - RECOMMNEDATION SYSTEMS ------------------------------
+
+
+Use:		Predicting user responses to options. 
+Ex:		Offering news articles to online newspaper readers based on a 
+		prediction of the readers interests
+		Offering customers of an on-line retailer suggestion about what they 
+		might buy
+
+Approaches	Content based - properties of the items.  Ex viewer who watches a lot of western
+				movies, the characteristic would be cowboy movies. 
+		Collaborative - recommend items based on similarity measures between 
+				users and or items.  The items recommended to a user are those
+				liked by similar users.  So you are 30, single, live in Atlanta, 
+				etc, so we predict you will like this type of movie.
+
+Model for Recommendation Systems
+
+1.) Utility Matrix:
+		
+		Objects = users and items
+		Matrix  = Each user-item pair. 
+		Values	= represents what is known about the degree of preference of that user
+			  for that item.  Values come from an ordered set, ex 1-5. 
+		Assumptions
+			= We assume the matrix is sparse, i.e. a lot of unkowns. 
+		Ex	= Index=users, Row=rating for each movie. 
+		Obj:	= the object of the system is to predict the blanks, i.e. the movies that
+			  the user has not yet rated. 
+2.) Practical Application
+
+		Brick-and-mortor
+			= Finite space and resources.  Can't tailor entire store to customer. 
+			= Physical newspaper can only print so many articles per day.  An online
+			  newspaper can print hundreds of thousands. 
+
+		Online Store
+			= Almost infinit possibilities. Show n number of products to customer base
+			  on their preferences.  Possibility exists to "tailor" store to each 
+		          customers' preferences. 
+
+ 
+		Long-tail phenomenon
+			= Distinction between the physical and virtual store.
+			= Physical institutions can only provide what is popular while
+			  online retailers can provide all items. The author seems to infer from
+			  this that online retailers then have the unique challenge of 
+			  identifying and understanding user preferences to only display what
+			  they like. (note:  not sure this is the current trend at retailers)
+
+		Netflix Challenge
+			  $1m prize awareded in 2009 to an algorithm that could beat theirs by 
+			  10%.  Took 3 years of competition to get a winner.  Level of importance
+			  Netflix put on recommendations. 
+
+
+		Application to Underwriting:
+			Ratings could be whether or not we quoted, which unfortunately is binary. 
+			Characteristics could be those of the account (requires account data). 
+			Note:  	Similar to what the author describes as the Netflix mode - 
+				user watched the movie so they must like it. 
+
+		Systems:
+			Content based:  based on the properties of items.  Similar items determined
+					by measuring the similarity of their characteristics.
+			Collaborative:	relationship between users and items. 
+					similarity of items is determined by the similarity
+					of the ratings of those items by the users who have
+					rated both items. 
+
+
+		Systems:
+			Content based:  based on the properties of items.  Similar items determined
+					by measuring the similarity of their characteristics.
+			Collaborative:	relationship between users and items. 
+					similarity of items is determined by the similarity
+					of the ratings of those items by the users who have
+					rated both items. 
+
+
+		Systems:
+			Content based:  based on the properties of items.  Similar items determined
+					by measuring the similarity of their characteristics.
+			Collaborative:	relationship between users and items. 
+					similarity of items is determined by the similarity
+					of the ratings of those items by the users who have
+					rated both items. 
+
+
+3.) Content Based Systems
+
+		Movie Features		First step is to define these characteristics.
+					Ex genre, actors, producers, etc. 
+		
+
+4.) Word Importance
+		In information retrieval, tf–idf or TFIDF, short for 
+		term frequency–inverse document frequency, is a 
+		numerical statistic that is intended to reflect 
+		how important a word is to a document in a 
+		collection or corpus.[1]
+
+		The tf-idf value increases proportionally to the number of times a word
+		appears in the document and is offset by the number of documents in the corpus
+		that contain the word, which helps to adjust for the fact that some
+		words appear more frequently in general. 
+
+		One approach to document classification is to take those words with the 
+		highest TF.IDF score. 
+
+		Other Measurements:	Cosine distance, Jaccard distance. 
+
+
+5.) 9.2.4 Representing Item Profiles 
+
+		Numerical Features:	Cannot be represented by Boolean vectors.  Feature should
+					represent the exact value of the feature. 
+					*When mixing boolean and continuous variables we should
+					take care to adjust the scaling for the continuos v's.  
+
+
+
+
+
+ 
+
+
+
