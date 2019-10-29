@@ -1,0 +1,97 @@
+﻿TITLE:		GSU IMAGE & TEXT ANALYTICS - FINAL PROJECT
+DATE:		OCTOBER 27, 2019
+DUE DATE:	NOVEMBER 20, 2019
+
+
+TOPIC:
+1. 	The use of nueral networks to handwritting recognition. 
+2.	The use of nueral networks to attempt to predice the demographics of the authors of written text.  
+
+
+PROJECT STRUCTURE --------------------------------------------------------
+1.	Introduction to topic and presentation. 
+	Application for handwritting regonition in general and in particular for demographics of the author. 
+	(Ex:  biometrics and crime scenes)
+2.	History of nueral networks applied to handwritting recognition
+3.	CNN		Convolutional nueral network technique
+4.	RNN / LSTM
+5.	Paper 1:	handwritting recognition & demographics. 
+6.	Paper 2:	handwritting recognition & demographics
+7. 	Conclusion
+
+
+RESEARCH PAPERS ----------------------------------------------------------------
+1.	Have we solved the problem of handwriting recognition?
+ 	https://towardsdatascience.com/https-medium-com-rachelwiles-have-we-solved-the-problem-of-handwriting-recognition-712e279f373b
+2.	Supervised Sequence Labelling w/ Reccurent Neural Networks 
+	https://www.cs.toronto.edu/~graves/preprint.pdf
+	Notes:  Training on unseen alphabet (no character dataset)
+3.	Gender and Handedness Prediction from Offline Handwritting Using Convolutional
+	Nueral Networks.
+	https://www.hindawi.com/journals/complexity/2018/3891624/
+	Authors:  Ángel Morera, Ángel Sánchez, José Francisco Vélez, and Ana Belén Moreno
+4.	Establising with scientific rigor the individuality of handwriting
+	S. N. Srihari, S.-H. Cha, H. Arora, and S. Lee, 
+	“Individuality of Handwriting,” Journal of Forensic Science, vol. 47, 
+	no. 4, pp. 856–872, 2002.
+	https://www.astm.org/DIGITAL_LIBRARY/JOURNALS/FORENSIC/PAGES/JFS15447J.htm
+5.	RNN-Based Handwriting Recognition in Gboard
+	Handwrite text on Android mobile service as an input to any Android app. 
+	100 languages. 
+	https://ai.googleblog.com/2019/03/rnn-based-handwriting-recognition-in.html
+	Paper:   "Fast Multi-language LSTM-based Online Handwriting Recognition"
+	Links:	
+6.	Automatic handedness detection from off-line handwriting
+	https://ieeexplore.ieee.org/abstract/document/6705761/authors#authors
+	$13 to purchase
+7.	Wavelet-based gender detection on off-line handwritten documents using 
+	probabilistic finite state automata
+	Author:  Younes Akbari, Kazem Nouri
+	Link:	https://www.sciencedirect.com/science/article/pii/S0262885616302141
+
+
+DATASETS ------------------------------------------------------------------
+1.	MNIST	70,000 handwritten documents
+		http://yann.lecun.com/exdb/mnist/
+		Used in deep learning since 1998
+2.	IAM 	Online Handwritting Database
+		Includes demographic information on the authors. 
+
+
+
+HISTORY -------------------------------------------------------------------
+1.	Ref: Have we solved the problem of handwriting recognition?  
+	- Handwritting recognition was first used for classification of postal mail. 
+	- The ﬁrst Optical Character Recognition (OCR) software developed in 1974 by Ray Kurzwei
+	- Challeges:	lacked efficiency and knowledge of unexpeted characters.
+			
+2.	First paper to introduce NN to handwriting recognition
+			Yann LeCun, Leon Bottou, Yoshua Bengio, and Patrick Haffner
+			"Gradient-Based Learning Applied to Document Regonition"
+			Published Nov 1998
+
+3.	Pique of Accuracy
+			2011 w/ Ciresan analysed handwriting achieving a tiny 0.27% error rate. 
+			https://ieeexplore.ieee.org/document/6065487
+
+SUMMARY PAPERS OF INTEREST -----------------------------------------------
+
+1.	Handwriting Using CNN	https://www.hindawi.com/journals/complexity/2018/3891624/
+				Application for Forensic Biometrics. 
+				Study focused on stability of CNN for three demographic 	
+				problems: gender, handedness and combined. 
+				First every approach to trying to predict gender + handedness. 
+				Apparently this study obtained the best results to date. 
+
+2.	Google RNN-Based Handwriting Recognition in Gboard
+				More recent work focuses on RNN variants such as Long-Short
+				Term Memory networks (LSTMs). 
+				"the deep learning revolution has swept away most feature
+				engineering efforts and replaced them with learned 
+				learned representations in many domains..."
+				Replaces their previous segment and decode system. 
+				Consists of a stack of bidirectional LSTMs
+
+
+
+	

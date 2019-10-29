@@ -1,0 +1,95 @@
+DOCUMENATION --------------------------------------------------------------------------------
+
+Thresholding:       https://docs.opencv.org/2.4/doc/tutorials/imgproc/threshold/
+                    threshold.html?highlight=threshold
+
+Application         If a pixel value is greater than a threshold value, it is assigned
+                    one value, else another. 
+        Syntax      cv2.threshold(img_gray, threshold_value, maxVal
+        maxVal      I assume anything above the threshold gets converted to the maxVal
+        Ex:         By setting our threshold to 75, which is fairly dark, any high int (white)
+                    values will get onverted to white.
+        Options     cv2.THRESH_TOZERO 
+                    cv2.THRESH_TOZERO_INV
+                    cv2.THRESH_BINARY
+                    cv2.THRESH_BINARY_INV
+                    cv2,THRESH_TRUNC
+
+1.  Find Contours
+    Url:        https://www.geeksforgeeks.org/find-and-draw-contours-using-opencv-python/
+                https://circuitdigest.com/tutorial/image-segmentation-using-opencv
+    Function    cv2.findContours(image, contour retrieval mode, 
+                                contour approximation method, output of image
+    Retrieval:  RETR_EXTERNAL
+    
+    Definition: A curve joining all the continous points along the boundary, having the same
+                clor or intensity. Note that contours are found where image/edge is white 
+                and background is black. 
+                
+    Contour:    Numpy array (x,y) 
+     
+    Means of Storing Contours:
+                CHAIN_APPROX_NONE:      Stores all boundary points. 
+                CHAIN_APPROX_SIMPLE:    Provides start and end points.
+
+    Hierarchy
+                RETR_LIST:              All contours
+                RETR_EXTERNAL:          external or outer contours
+                RETR_CCOMP:             retrieves all in 2 lvl hierarchy
+                RETR_TREE               retrieves all in full hierarchy. 
+
+    Sort Contours
+                n = len(contours)-1
+                contours_sorted = sorted(contours, key=cv2.contourArea, reverse=False)[:n]
+
+   Iterate through the contours and draw convex hull
+                for c in contours_sorted:
+                    hull = cv2.convexHull(c)
+                    cv2.drawContours(img_read, [hull], 0,(0,255,0), 2)
+                    cv2.imshow('convex hull', img_read)
+                    cv2.waitKey(0)
+                    cv2.destroyAllWindows()
+
+2.) Match Contours by shape
+                https://circuitdigest.com/tutorial/image-segmentation-using-opencv
+
+    Explanation OpenCV comes with a function cv2.matchShapes() which enables us to compare 
+                two shapes, or two contours and returns a metric showing the similarity. 
+                The lower the result, the better match it is. It is calculated based on the 
+                hu-moment values. Different measurement methods are explained in the docs.
+                https://docs.opencv.org/3.1.0/d5/d45/tutorial_py_contours_more_functions.html
+
+    Arguments:  cv2.matchShapes(contour template, contour, method, parameter)
+                template -  ref contour for which we are trying to find a match in the new img   
+                object2 -   the indv contour we are checking against.
+                method  -   CV_CONTOURS_MATCH_I1 (1-3)
+
+
+
+3.) Convex Hull: Hull refers to the exterior shape of an object. 
+                Convex hull of a shape or a group of points is a tight fitting convex 
+                boundary around the points or the shape.   
+                Convex refers to a shape or object with no interior angles >180 degrees. 
+                docs = https://www.learnopencv.com/convex-hull-using-opencv-in-python-and-c/
+                Note:  Once we get the points we need to create a convex hull.  It appears that
+                        it is not just sufficient to obtain the contours as we need to draw
+                        lines around it in order to obtain the "shape".  Convex hull
+                        alls us to do this. 
+
+
+4.) Contour Approximation
+                docs =  https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials
+                        /py_imgproc/py_contours/py_contour_features/py_contour_features.html
+                desc:   When trying to find say a square in an image, you can use this
+                        function to find imperfect shapes that resemble what you are 
+                        looking for. According to the docs it does the same thing as convex hull
+
+5.) cv.drawContours:    (source image, contour passed as list, index of contour to draw / 
+                        pass -1 if you want to draw all contours, (color), thickness)
+
+
+6.) Contour Area
+                        'https://docs.opencv.org/trunk/d1/d32/tutorial_py_contour_properties.html'
+                        area = cv2.contourArea(contours_sorted[1])
+
+
