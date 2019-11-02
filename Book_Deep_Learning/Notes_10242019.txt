@@ -1,0 +1,15 @@
+Title:  Deep Learning, Ian Goodfellow
+
+
+Contents:
+
+1.) 	Long short term memory, 	17, 24, 297, 399, 413
+2.) 	CNN				247, 321, 413, 448
+3.) 	RNN				368
+
+
+
+Definitions:
+
+1.) 	Perceptron:	algorithm for supervised learning of binary classifiers. 
+
