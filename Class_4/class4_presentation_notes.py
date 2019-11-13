@@ -1,17 +1,4 @@
-# PROJECT DELIVERABLES ---------------------------------------------------------
 '''
-1.  LDA model:  best output (log-likelihood, coherence store, bubble visualization)
-2.  Dynamic topic model (topics change over time)
-3.  LDA2VEC:    how does this compare to the LDA model? Improvement methods such as using
-                word2vec pre-trained data
-4.  LSTM generate new texts.  refer to http://karpathy.github.io/2015/05/21/rnn-effectiveness/
-
-
-Deliverables:
-1.  Code:       notebook and html
-2.  Excel file: topic-key words distributions output
-3.  Presentation slides
-
 Python Libraries (noted in presentation):
 1. LSA:     from sklearn.feature_extraction.text import TfidVectorizer
             from sklearn.decomposition import TruncatedSVD
@@ -120,17 +107,39 @@ Cosine Similarity:
 
 Topic Modeling:
                 - Topic is the main idea discussed in a text data. 
-                - Could be topic of a sentence, paragram, an article or entire corpus. 
+                - Could be topic of a sentence, paragram, an article or entire corpus.
+                - Goa is to produce interpretable document representations which can be used
+                  to discovery the topics or structure in a collection of unlabelled docs. 
+                  Ex:  Document 1 is 20% topic A, 40% topic B and 40% topic C. 
 
 
 
 LDA:            - Stands for Latent Dirichlet Allocation
                 - Each topic is a distribution over words
                 - Each document is a mixture of corpus-wide topics
+                - Treats documents as a bag of words. 
                 - Each word is drawn from one of those topics. 
                 - *Trying to figure out which words tend to co-occur and will cluster them
                   into distinct topics. 
                 - **Implementation - Gensim / Tipic Modeling w/ Scikit Learn
+
+Ida2vec         - builds document representations on top of word embeddings. 
+                - learns a word vector that predicts context words accross diff docs. 
+                - Building on skip-gram technique, ida2vec adds the pivot word vector and
+                  a document vector to obtain a context vector. This context vector is used
+                  to predit context words. 
+                - Take the word "French" as a pivot word.  The Skip-gram model may predict
+                  'German', 'Dutch' or 'English' as good pairs. 
+                  *By providing an additional context vector in the ida2vec model it is possible
+                  to make gusses of context words.  Therefore, given "french" + "food" + "drink"
+                  maybe "baguette", "cheese" and "wine" are more suitable. 
+                  * If the context vector is "city" then maybe "Paris", "Lyon" are beter pairs. 
+                - Context Vector:   created by combinin the word + document vector. 
+
+Text Clustering
+                - Unsupervised clustering of documents. 
+                - Apparently you can use K-Means clustering using the Euclidean Distance 
+                  among the word vectors to cluster nearby documents. 
 
 
 '''

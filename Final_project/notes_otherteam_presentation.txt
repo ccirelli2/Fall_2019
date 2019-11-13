@@ -1,0 +1,66 @@
+Deep Learning on Healthcare
+
+
+Slides: 
+
+1. AI in the Medical Field Today
+- Why demand in medicine today (good overview of why and the applications). 
+- Increase in the availability in the data
+
+
+2. Progress
+- Use in text, health records
+- Use cancer detection
+
+3. Pneumonia Detection in X-Rays
+- Defining what Pneumonia is
+
+
+4. Pneumonia Detection in X-Rays
+- Challenges and missdiagnose Pneumonia
+- Algorithm they found
+
+5. Introduction to Model they found
+- Goal of ChexNet
+- Exceed accuracy of x-ray analysts
+- Input data
+- Output binary classification. 
+- Results
+
+
+6. ChexNet a Deeper Look
+- Problem formulation
+- How the model was trained
+- Preprocessing steps that they used
+- Testing approach, compare model vs experienced radiologists
+
+7. Related work
+- Other applications of ChexNet
+
+8. Conclusions
+
+
+
+9. They are presenting their model
+- Professor wanted to know the performance of the ChexNet model
+- They are presenting their model. 
+- How they set up their model, dataset, etc. 
+
+10. Base Model
+- 5-layer CNN
+
+11. Show code
+
+12. Accuracy of Base Model
+
+
+13. 
+
+
+*note:
+- probably should include research into applications of the technology. 
+- read both so that you can 
+
+
+
+

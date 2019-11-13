@@ -1,0 +1,29 @@
+INTRODUCTION TO RNN AND LSTMs WITH KERAS ----------------------
+
+- Focus on natural language
+- Need to watch video on RNN and LSTM
+- For the NN, the presenter is not using 1/0 to represent a word, rather a unique number. 
+- This appears to result in dense vectors and only include the words in the sentence. 
+- Question:  Can this representation be used in other machine learning algorithms?
+- Words labeled 1 to n.  0 is reserved for padding. For example with text, you can't throw in 
+  a sentence w/ a vector of 10 and anther w/ 5. 
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

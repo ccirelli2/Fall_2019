@@ -1,6 +1,5 @@
 ﻿TOPIC:	NEURAL NETWORKS AND HANDWRITING RECOGNITION
 
-
 AREAS OF RESEARCH --------------------------------------------------------
 1.	Origins of handwritting recognition
 2.	What techniques have been used over time?
@@ -52,7 +51,7 @@ TOPICS 	-------------------------------------------------------------------
 	speed of writing. 		
 2.	Historical documents, acrhives, or mass digitization of hand filled forms. 
 3.	Identifying demographics based on handwritting styles. 
-
+4.	Evolution handwriting rec https://ieeexplore.ieee.org/abstract/document/5698375
 
 
 QUESTION ------------------------------------------------------------------
@@ -115,6 +114,16 @@ SUMMARY PAPERS OF INTEREST -----------------------------------------------
 				learned representations in many domains..."
 				Replaces their previous segment and decode system. 
 				Consists of a stack of bidirectional LSTMs
+
+
+
+REVIEW GOOGLE LSTM PAPER ----
+
+1.	We should probably review prior GSU presentaions and materials online to get a 
+	better understanding for the general tennants of handwriting recognition using NN. 
+2.	Connectionist Temporal Classsification - 
+	https://en.wikipedia.org/wiki/Connectionist_temporal_classification
+3.	Need to review and understand Bidirectional LSTM models. 
 
 
 
