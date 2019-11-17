@@ -18,6 +18,10 @@ import gensim.corpora as corpora
 from gensim.utils import simple_preprocess
 from gensim.models import CoherenceModel
 
+# pyLDAvis
+import pyLDAvis
+import pyLDAvis.gensim
+
 # Spacy
 import spacy
 
@@ -93,7 +97,8 @@ def get_perplexity_score(lda_model, corpus):
 
 def get_coherence_score_num_topics( min_num_topics, max_num_topics, corpus, id2word, 
                                     random_state, update_every, chunksize, passes, 
-                                    texts, coherence_measure):
+                                    texts, coherence_measure, plot=False, print_topics=False, 
+                                    show_topic_bubbles=False):
     '''
     Purpose:        Calculate the coherence score from the lda model over n-topics
     min/max_topics  Minimum and maximum number of topics to test
@@ -105,7 +110,9 @@ def get_coherence_score_num_topics( min_num_topics, max_num_topics, corpus, id2w
     Output:         List of tuples, (topic_num, coherence_score)
     '''
     # List - Coherence Score (num_topics, score)
-    coherence_scores = []
+    num_topics_l        = []
+    log_perplexity_l    = [] 
+    coherence_scores_l  = []
 
     # Train LDA on N Topics
     for num_topics in range(min_num_topics, max_num_topics):
@@ -113,17 +120,55 @@ def get_coherence_score_num_topics( min_num_topics, max_num_topics, corpus, id2w
             random_state=random_state, update_every=update_every, chunksize=chunksize, 
             passes=passes)
         
+        # Print Topics
+        if print_topics == True:
+            lda_model_output.print_topics()
+
+        if show_topic_bubbles == True:
+            vis = pyLDAvis.gensim.prepare(lda_model_output, corpus, id2word)
+            dir_output = r'/home/ccirelli2/Desktop/GSU/Fall_2019/Project_2/output'
+            pyLDAvis.save_html(vis, dir_output + '/' + 'vis.html')
+            print('Topic bubble graph saved to {}'.format(dir_output))
         # Generate Coherence Score
+        log_perplexity_score= lda_model_output.log_perplexity(corpus)
         coherence_model_lda = CoherenceModel(model=lda_model_output, texts = texts, 
                               dictionary=id2word, coherence=coherence_measure)
         coherence_score     = coherence_model_lda.get_coherence()
         
         # Append Num Topics & Score to List
-        coherence_scores.append((num_topics, coherence_score))
+        num_topics_l.append(num_topics)
+        log_perplexity_l.append(log_perplexity_score)
+        coherence_scores_l.append(coherence_score)
+
         print('Score score generated for topic num => {}'.format(num_topics))
+        print('Log Perplexity Score => {}'.format(log_perplexity_score))
+        print('Coherence Score      => {}'.format(coherence_score))
+
+    # Create Dataframe
+    df = pd.DataFrame({})
+    df['num_topics']            = num_topics_l
+    df['coherence_scores']      = coherence_scores_l
+    df['log_perplexity_score']  = log_perplexity_l
+
+    # Plot Scores
+    if plot_scores == True:
+        
+        # Coherence 
+        df_plot_coh     = df['coherence_scores'].plot(kind='line', 
+                            use_index=False, grid=True, legend=True, fontsize=15)
+        plt.title('COHERENCE SCORE')
+        
+        plt.show()
+        
+        # Perplexity
+        df_plot_perp    = df['log_perplexity_score'].plot(kind='line', 
+                            use_index=False, grid=True, legend=True, fontsize=15)
+        plt.title('PERPLEXITY SCORE')
+        plt.show()
+    
 
     # Return List of Scores to User
-    return coherence_scores
+    return df
 
 
 

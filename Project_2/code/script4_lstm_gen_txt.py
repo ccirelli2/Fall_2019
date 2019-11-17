@@ -74,7 +74,7 @@ n_chars = len(txt_sample)
 n_vocab = len(chars)
 
 # Create Sequences 
-seq_length  = 500
+seq_length  = 100
 dataX       = []
 dataY       = []
 Count       = 0
@@ -123,11 +123,16 @@ loaded_model.compile(loss='categorical_crossentropy', optimizer='adam')
     in the data prep stage'''
 start           = np.random.randint(0, len(X)-1)
 pattern_start   = dataX[start]
+pattern_unique  = 'dump your stocks the market is falling negative earnings negative economic data negative jobs report' 
+pattern_unique_encoded = [char_to_int[x] for x in pattern_unique]
+
 
 # Generate Predictions 
 ''' Iterate over number of predictions to generate (w/ gen indv chars)
     You will also need to decode the prediction as it will be an int. 
 '''
+
+
 
 def gen_prediction(model, n_predictions, pattern_start):
 
@@ -156,7 +161,8 @@ def gen_prediction(model, n_predictions, pattern_start):
 
     print('\n\n*** GENERATED TEXT ***', ''.join(gen_txt)) 
 
-gen_prediction(loaded_model, 1000, pattern_start)
+
+gen_prediction(loaded_model, 1000, pattern_unique_encoded)
 
 
 

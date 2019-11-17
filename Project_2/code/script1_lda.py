@@ -67,13 +67,14 @@ Topic Perplexity        It captures how surprised a model is of new data it has 
 
 '''
 
-# IMPORT PYTHON PACKAGES -------------------------------
+# IMPORT PYTHON PACKAGES --------------------------------------------------
 import re
 import numpy as np
 import pandas as pd
 from pprint import pprint
 from datetime import datetime
 import string
+import random 
 
 #Nltk
 from nltk.stem.wordnet import WordNetLemmatizer
@@ -103,50 +104,63 @@ stop_words = [word for word in stopwords.words('english')]
 # Project Modules
 import module1_lda as m1
 
-# LOAD DATA -------------------------------------------
+# LOAD DATA ----------------------------------------------------------------
 afile = r'M_fund.xlsx'
 dir_  = r'/home/ccirelli2/Desktop/GSU/Fall_2019/Project_2/data'
 path2file = dir_ + '/' + afile
 df = pd.read_excel(path2file).dropna()
 
+# CREATE SAMPLE SET --------------------------------------------------------
+random_num  = random.randint(5000,6000)
+df          = df.iloc[: random_num]
 
-# INSPECT DATA ----------------------------------------
+
+# INSPECT DATA -------------------------------------------------------------
 print('Dimensions   => {}'.format(df.shape))
 print('Column Names => {}'.format(df.columns))
-print(df.head())
 
-# ISOLATE PRINCIPAL STRATEGIES (ROWS W/ TEXT) ---------
+# ISOLATE PRINCIPAL STRATEGIES (ROWS W/ TEXT) ------------------------------
 df_strategies = df['principal_strategies']
 
-# PREPROCESS TEXT -------------------------------------
+# PREPROCESS TEXT ----------------------------------------------------------
 clean_txt = m1.preprocess_txt(df_strategies)
 
-# CREATE A DICTIONARY AND CORPUS FOR MODELING --------
+# CREATE A DICTIONARY AND CORPUS FOR MODELING ------------------------------
 id2word   = Dictionary(clean_txt)
 corpus    = [id2word.doc2bow(sentence) for sentence in clean_txt]
 
 
-# BUILD TOPIC MODEL ----------------------------------
+# BUILD TOPIC MODEL / GEN COHERENCE & PERPLEXITY SCORES --------------------
+'''The lda model is built into the coherence score function
 '''
-lda_model = m1.lda_train_model(corpus, id2word, num_topics=1, 
-            random_state=100, update_every=1, chunksize=100, passes=10)
-'''
-
-# MODEL COMPLEXITY SCORE --------------------------------------------
-
-coherence_scores = m1.get_coherence_score_num_topics(
-        min_num_topics=10, max_num_topics=12, corpus=corpus, id2word=id2word, random_state=100, 
-        update_every=1, chunksize=100, passes=10, texts=clean_txt, coherence_measure='c_v')
+def coherence_scores():
+    coherence_scores = m1.get_coherence_score_num_topics(
+        min_num_topics=10, max_num_topics = 11, corpus=corpus, id2word=id2word, random_state=100, 
+            update_every=1, chunksize=100, passes=10, texts=clean_txt, coherence_measure='c_v', 
+            plot=True, print_topics=False, show_topic_bubbles=True)
         
-print(coherence_scores)
+    print(coherence_scores)
 
+coherence_scores()
 
+# VIZUALIZE MODEL ----------------------------------------------------
+num_topics      = [1,2,3,4,5,6,7,8,9,10,11,12]
+coherence_score = [0.312, 0.342, 0.358, 0.374, 0.366, 0.40, 0.408, 0.397, 0.380, 0.408, 0.415]
+perplexity_score= [-6.44, -6.34, -6.27, -6.227, -6.21, -6.19, -6.17, -6.18, -6.21, -6.25, -6.34]
 
-
-
-
-
-
+# Plot Coherence Score
+'''
+plt.plot(coherence_score)
+plt.ylabel('Score', fontsize=14)
+plt.xlabel('Number of Topics', fontsize=14)
+plt.title('LDA MODEL - COHERENCE SCORE', fontsize=16)
+plt.show()
+plt.plot(perplexity_score)
+plt.ylabel('Score', fontsize=14)
+plt.xlabel('Number of Topics', fontsize=14)
+plt.title('LDA MODEL - PERPLEXITY SCORE', fontsize=16)
+plt.show()
+'''
 
 
 
