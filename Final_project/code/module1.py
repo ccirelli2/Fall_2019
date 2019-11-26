@@ -11,7 +11,7 @@ import numpy as np
 import os
 import xml.etree.ElementTree as ET
 from datetime import datetime
-
+from PIL import Image
 
 # Project
 import module0_sql as m0
@@ -142,7 +142,57 @@ def parse_stroke_file(path2file):
 
 
 
+# GET MAXIMUM DIMENSION OF IMAGES 
 
+def get_max_dim(dir_parent_images):
+    '''
+    Description:        Get Maximum dimension by iterating all images files. 
+                        Purpose is to figure out how much padding is required
+    '''
+    # List Objects
+    nrows   = []
+    ncols   = []
+
+    # Counter 
+    Count = 0
+
+    # Iterate Directory of Images
+    for root, dirs, files in os.walk(dir_parent_images):
+        for dir_ in dirs:
+            dir2imgs   = root + '/' + dir_
+
+            # Iterate Image Files In Each Subdirectory
+            for img_n in os.listdir(dir2imgs):
+                
+                if '.' in img_n:
+                    # Get Dimensions of Image
+                    path2img    = dir2imgs + '/' + img_n
+                    img_open    = Image.open(path2img)
+                    img_array   = np.array(img_open) 
+                    img_shape   = img_array.shape
+                    
+                    # Append Number of Rows & Columns
+                    nrows.append(img_shape[0])
+                    ncols.append(img_shape[1])
+                    print('Image Shape {} by {}'.format(img_shape[0], img_shape[1]))
+                    
+                    # Logging
+                    Count +=1
+                    print('Count => {}'.format(Count))
+        
+    # Logging - Finish Obtaining Dimensions
+    print('\n\n Finished obtaining dimensions of all image files')
+
+
+    # Get Max Dimensions
+    max_rows = max(nrows)
+    max_cols = max(ncols)
+
+    # Logging Max Values
+    print('Maximum number of rows => {}'.format(max_rows))
+    print('Maximum number of cols => {}'.format(max_cols))
+
+    return nrows, ncols
 
 
 
