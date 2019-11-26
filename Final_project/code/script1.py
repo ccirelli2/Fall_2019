@@ -10,80 +10,36 @@ import pandas as pd
 import numpy as np
 import os
 import xml.etree.ElementTree as ET
+import mysql.connector
+from datetime import datetime
 
 
 # Project
+import module1 as m1
+import module0_sql as m0
 
+# MYSQL CONNECTION ----------------------------------------------------
+mydb    = mysql.connector.connect(
+            host    ='localhost', 
+            user    =input('User => '),
+            passwd  =input('Password => '), 
+            database='GSU_SPRING_FP'
+            )
+mycursor    = mydb.cursor()
 
 # LOAD DATA -----------------------------------------------------------
 
-
+# Author Info
 dir_data    = r'/home/ccirelli2/Desktop/GSU/Fall_2019/Final_project/data'
-afile       = r'writers.xml'
-path2file   = dir_data + '/' + afile
+author_info = r'writers.xml'
+path2_author= dir_data + '/' + author_info  
 
 
-def parse_author_info_xml(xml_file):
-    '''
-    Input:  Entire path to xml file
-    ET      use to parse xml file into tree structure
-    tag     will give you all the tags in the file
-    attrib  attributes
-    Example:
-    {'name': '10208', 'DayOfBirth': '1971-06-03', 'EducationalDegree': 'Dipl. ing.', 
-    'Gender': 'Male', 'NativeCountry': 'Switzerland', 'NativeLanguage': 'Swiss German', 
-    'Profession': 'Student', 'Science': 'Computer Science', 'WritingType': 'Right-handed', 
-    'WrittenLanguage': 'German'}
-    '''
-    # Parse XML File
-    tree    = ET.parse(xml_file)
-    root    = tree.getroot()
-    
-    # Create DataFrame of Data
-    df = pd.DataFrame({})
-
-    # List of Values
-    name            = []
-    dob             = []
-    education       = []
-    gender          = []
-    country_origin  = []
-    native_lang     = []
-    profession      = []
-    writing_hand    = []
-
-    # Iterate Tree:
-    for child in root:
-        try:
-            attrib      = child.attrib
-            name.append(            attrib['name'])
-            dob.append(             attrib['DayOfBirth'])
-            education.append(       attrib['EducationalDegree'])
-            gender.append(          attrib['Gender'])
-            country_origin.append(  attrib['NativeCountry'])
-            native_lang.append(     attrib['NativeLanguage'])
-            writing_hand.append(    attrib['WritingType'])
-        except KeyError as err:
-            print('Key Error  => {}'.format(err))
-            pass
-
-    # Build DataFrame
-    df['name']              = name
-    df['dob']               = dob
-    df['education']         = education
-    df['gender']            = gender
-    df['country_origin']    = country_origin
-    df['native_language']   = native_lang
-    df['writing_hand']      = writing_hand
-
-    return df
+root_dir_data = r'/home/ccirelli2/Desktop/GSU/Fall_2019/Final_project/data/online/original-xml-part/original'
 
 
 
-a = parse_author_info_xml(path2file)
-
-
-print(a.head())
+# FUNCTIONS -----------------------------------------------------------
 
 
 
