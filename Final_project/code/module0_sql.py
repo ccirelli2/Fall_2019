@@ -4,6 +4,11 @@
 
 '''
 
+# IMPORT MODULES ---------------------------------------------
+
+# Python
+import os
+import pandas as pd
 
 
 
@@ -149,3 +154,85 @@ def build_database_online_files_sql(root_dir_data):
 
     # Return None
     return None
+
+
+
+
+def insert_file_names_into_table_sql(dir_padded_files, mydb, mycursor):
+    ''' 
+    Description:    Insert file root name and id into table. 
+                    Purpose is to separate the root name and id, then use
+                    another function to join the author id onto the root. 
+                    Then we can generate a sample of files w/ evenly distributed
+                    target variables. 
+    Example         full_name   h01-004z-07.jpg
+                    root        h01-004
+                    ext         z-07
+    
+    '''
+    
+    # Generate List of All Image Files 
+    list_files  = os.listdir(dir_padded_files)
+    
+    # Count
+    Count       = 0 
+    num_files   = len(list_files)
+
+    # Iterate List of Files
+    for afile in list_files:
+
+        # Separate File Name
+        root_name   = afile[:8]
+        id_name     = afile[8:]
+    
+        # Insert Values Into Database
+        sql = '''INSERT INTO file_mapping (full_name, root_name, id_name)
+                 VALUES (%s, %s, %s)'''
+        val = (afile, root_name, id_name)    
+        mycursor.execute(sql, val)
+        mydb.commit()
+    
+        # Logging
+        Count += 1
+        print('Percentage completion => {}'.format(Count / num_files))
+
+    # END ----------------------------------------------
+
+
+
+
+# GET SAMPLE SETS FOR TRAINING --------------------------------------------
+
+
+def sql_query_random_sample_handedness(mydb):
+    '''
+    Input:      Feature, value; example 'writing_hand', 'Right-handed'
+    Output:     Random sample
+    '''
+    # Logging
+    print('Querying handedness dataset')
+
+    sql = '''
+            SELECT * FROM 
+            ( SELECT * FROM file_author_img_mapping WHERE writing_hand = 'Right-handed' 
+            ORDER BY RAND() LIMIT 1025) AS Right_handed 
+            UNION 
+            SELECT * FROM ( SELECT * FROM file_author_img_mapping WHERE writing_hand = 'Left-handed'
+            ORDER BY RAND() LIMIT 1025) AS Left_handed
+            ;
+    '''
+
+    # Return dataframe
+    df = pd.read_sql(sql, mydb)
+
+    # Logging
+    print('Query complete')
+
+    # Return Dataframe
+    return df
+
+
+
+
+
+

@@ -1,0 +1,20 @@
+select full_name, root_name, writer_id from file_mapping join author_image_mapping on file_mapping.root_name = author_image_mapping.form_id limit 10
+
+
+SELECT 	full_name, 
+	root_name, 
+	writer_id,
+	dob, 
+	education, 
+	gender, 
+	country_origin, 
+	native_language, 
+	writing_hand 
+
+FROM 	file_mapping
+
+JOIN	author_image_mapping ON file_mapping.root_name = author_image_mapping.form_id
+
+JOIN	author_info ON author_image_mapping.writer_id = author_info.name
+
+
