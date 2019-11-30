@@ -10,7 +10,7 @@ Description:        Preprocess images
 # Python
 import pandas as pd
 import numpy as np
-import os
+import os, sys
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from PIL import Image
@@ -143,8 +143,6 @@ def parse_stroke_file(path2file):
 
 
 
-
-
 # GET MAXIMUM DIMENSION OF IMAGES 
 
 def get_max_dim(dir_parent_images):
@@ -199,28 +197,52 @@ def get_max_dim(dir_parent_images):
 
 
 
-
-
-
-
-def padd_imgs(list_path2imgs, dir_output_new_imgs, d_rows, d_cols, 
-              print_img_shape=False, img_show=False):
+def padd_imgs(dir_orig_imgs, name_padded_dir, d_rows, d_cols, 
+              print_img_shape=False, img_show=False, mkdir=False):
     '''
-    Input:      directory where images are located, directory to output padded images
+    Input:      1.) Directory where original (resized) images are located
+                2.) Directory to write new images to
+                3.) Desired row & column count
+    
     Output:     None.  We're going to save the padded images to a new directory.
                 Padded images will need to have names that coincide with the 
                 mapping to out authors.
     '''
-    # Define Designed Dimensions For Padded Image
+   
+    # MAKE PADDED IMAGE DIRECTORY ------------------------------------------
+    root        = r'/home/ccirelli2/Desktop/GSU/Fall_2019/Final_project/data/online'
+    dir_output_padded_imgs = root + '/' + name_padded_dir 
+    if mkdir == True:
+        os.mkdir(dir_output_padded_imgs)
+        print('New directory created => {}'.format(dir_output_padded_imgs))
+    
+
+    # GET LIST ALL FILES IN PATH -------------------------------------------
+    list_path2imgs = []
+    def get_all_files_in_dir(path):
+
+        # Check if path is dir or file
+        if '.' in path:
+            #print(path)
+            list_path2imgs.append(path)
+
+        else:
+            for adir in os.listdir(path):
+                get_all_files_in_dir(path + '/' + adir)
+    # Run Function
+    get_all_files_in_dir(dir_orig_imgs)
+
+    
+    # DEFINE DIMENSIONS OF NEW IMAGE ----------------------------------------
     desired_rows    = d_rows
     desired_cols    = d_cols
 
     # Template - Zero Vector Image w/ Desired Dimensions / Convert to White pixels
     np_array_zeros  = np.zeros((desired_rows, desired_cols))
-    np_array_zeros[:,:]  = 255
+    np_array_zeros[:,:]  = 255  # set color to white
 
 
-    # Iterate List of Full Paths to Images
+    # ITERATE LIST OF ORIGINAL IMAGES ----------------------------------------
     for path2img in list_path2imgs:
 
         # Open Image File
@@ -228,47 +250,37 @@ def padd_imgs(list_path2imgs, dir_output_new_imgs, d_rows, d_cols,
         original_img_array     = np.array(original_img_open)
         original_img_shape     = original_img_array.shape
 
-        # Calculate Difference Between Actual and Zero Vector Image  
-        row_diff        = desired_rows - original_img_shape[0]
-        row_padd        = int(row_diff / 2)
-        col_diff        = desired_cols - original_img_shape[1]
-        col_padd        = int(col_diff / 2)
+        # Exclude Images Larger Than Zero Vector Image
+        if original_img_shape[0] < d_rows + 1 and original_img_shape[1] < d_cols + 1:
 
-        if print_img_shape == True:
-            print('Dimension small image => {}'.format(original_img_shape))
-            print('Dimension big image   => {}'.format(np_array_zeros.shape))
-            print('Row pad = {}, Column padd = {}'.format(row_padd, col_padd))
+            # Calculate Difference Between Actual and Zero Vector Image  
+            row_diff        = desired_rows - original_img_shape[0]
+            row_padd        = int(row_diff / 2)
+            col_diff        = desired_cols - original_img_shape[1]
+            col_padd        = int(col_diff / 2)
+
+            if print_img_shape == True:
+                print('Dimension small image => {}'.format(original_img_shape))
+                print('Dimension big image   => {}'.format(np_array_zeros.shape))
+                print('Row pad = {}, Column padd = {}'.format(row_padd, col_padd))
+            
+            # SUPER IMPOSE ORIGINAL IMAGE ON ZERO VECTOR IMAGE --------------
+            np_array_zeros[row_padd: row_padd + original_img_shape[0],
+                           col_padd: original_img_shape[1] + col_padd] = original_img_array
+
+            # Show Image
+            if img_show == True:
+                img_padded      = cv2.imshow('Padded Image', np_array_zeros)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
         
-        # Assign values of original image to center of zero vector image
-        '''
-        Descriptions:   Think about the below as indexing a space in the middle
-                        of your image with all zeros that is the same dimension
-                        as your smaller images.  Then you just assigned that small
-                        box the values of your smaller images
-        '''
-        np_array_zeros[row_padd: row_padd + original_img_shape[0],
-                       col_padd: original_img_shape[1] + col_padd] = original_img_array
-
-        # Show Image
-        if img_show == True:
-            img_padded      = cv2.imshow('Padded Image', np_array_zeros)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-        
-        # Write Images to File (padded image file name, padded image obj)
-        filename = str(path2img.split('/')[-1].split('.')[0])
-        cv2.imwrite(dir_output_new_imgs + '/' + filename + '.jpg', np_array_zeros)
-        print('Padded image has been written to => {}'.format(dir_output_new_imgs +
-               '/' + filename + '.jpg'))
-
+            # WRITE PADDED IMAGE TO NEW DIRECTORY ---------------------------
+            filename = str(path2img.split('/')[-1].split('.')[0])
+            cv2.imwrite(dir_output_padded_imgs + '/' + filename + '.jpg', np_array_zeros)
+            print('Padded image has been written to => {}'.format(dir_output_padded_imgs +
+                   '/' + filename + '.jpg'))
 
         # END -----------------------------------------------
-
-
-
-
-
-
 
 
 
@@ -285,10 +297,24 @@ def get_all_files_in_dir(path):
 
 
 
-def get_dict_freq_img_dims(get_all_files_in_dir):
+def get_dict_freq_img_dims(dir_orig_imgs, dir_output):
+
+    # Logging
+    print('Generating a Frequency Table for Dimensions of Images')
 
     # Get list all files
     list_path2imgs = []
+    def get_all_files_in_dir(path):
+
+        # Check if path is dir or file
+        if '.' in path:
+            #print(path)
+            list_path2imgs.append(path)
+
+        else:
+            for adir in os.listdir(path):
+                get_all_files_in_dir(path + '/' + adir)
+
     get_all_files_in_dir(dir_orig_imgs)
    
     # Dict Object Hold Frequencies
@@ -313,21 +339,20 @@ def get_dict_freq_img_dims(get_all_files_in_dir):
     df_row['Row_count'] = [x for x in dict_row_dim_freq]
     df_row['Frequencies'] = list(dict_row_dim_freq.values())
     df_row = df_row.sort_values(by= ['Row_count'])
-    os.chdir(r'/home/ccirelli2/Desktop/GSU/Fall_2019/Final_project/output')
+    os.chdir(dir_output)
     df_row.to_excel('Row.xlsx')
+    print('Writing Row.xlsx to {}'.format(dir_output))
 
     # Write Col Dim 2 File
     df_col['Col_count'] = [x for x in dict_col_dim_freq]
     df_col['Frequencies'] = list(dict_col_dim_freq.values())
     df_col = df_col.sort_values(by= ['Col_count'])
-    os.chdir(r'/home/ccirelli2/Desktop/GSU/Fall_2019/Final_project/output')
+    os.chdir(dir_output)
     df_col.to_excel('Col.xlsx')
+    print('Writing Col.xlsx to {}'.format(dir_output))
 
     # Logging
     print('finished')
-
-
-
 
 
 
@@ -376,6 +401,69 @@ def remove_img_files_with_mxn_dims(m, n, list_path2imgs):
 
 
 
+def reshape_original_images(dir_orig_imgs, dir_resized, new_size, mkdir=False):
+    ''' 
+    Description:        The purpose of this function is to reshape images
+                        - Reshape those > certain threshold
+                        - Add padding for specified dimension
+                        - Save images as jpg file type to new folder
+                
+    Input:              1.) Directory where the original files are located
+                        2.) Name of the output directory to create and save
+                            the resized images. 
+                        3.) New size = float representing new size.  Ex 0.25
+    '''
+
+    # CREATE NEW DIRECTORY FOR RESIZED IMAGES ---------------------------------------
+    root        = r'/home/ccirelli2/Desktop/GSU/Fall_2019/Final_project/data/online'
+    dir_output_resized_imgs = root + '/' + dir_resized
+    if mkdir == True:
+        os.mkdir(dir_output_resized_imgs)
+        print('New directory created => {}'.format(dir_output_resized_imgs))
+    
+
+    # GET LIST PATH 2 IMAGES---- ----------------------------------------------------
+    list_path2imgs  = []
+
+    def get_all_files_in_dir(path):
+        # Check if path is dir or file
+        if '.' in path:
+            #print(path)
+            list_path2imgs.append(path)
+        else:
+            for adir in os.listdir(path):
+                get_all_files_in_dir(path + '/' + adir)
+
+    get_all_files_in_dir(dir_orig_imgs)
+
+
+    # RESIZED IMAGES ---------------------------------------------------------------
+    
+    # Count Number of Resized Images
+    Count = 0 
+    
+    # Iterate List of Paths 2 Images
+    for a_path2img in list_path2imgs:
+
+        # Read the Image
+        img     = cv2.imread(a_path2img, cv2.IMREAD_GRAYSCALE)
+
+        # Define Dimension
+        scale_percentage    = new_size
+        width               = int(img.shape[1] * scale_percentage)
+        height              = int(img.shape[0] * scale_percentage)
+        dim                 = (width, height)
+        img_resized         = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
+
+        # Save Image to New Directory 
+        img_name_resized = a_path2img.split('/')[-1].split('.')[0] + '.jpg'
+        path2resized_img = dir_output_resized_imgs + '/' + img_name_resized
+        cv2.imwrite(path2resized_img, img_resized)
+        # Increase Count
+        Count += 1
+
+    # Logging
+    print('{} files written to {}'.format(Count, dir_output_resized_imgs))
 
 
 
