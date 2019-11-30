@@ -1,5 +1,6 @@
 # DOCUMENTATION -------------------------------------------------------
 '''
+    https://techtutorialsx.com/2019/04/13/python-opencv-converting-image-to-black-and-white/
 '''
 
 
@@ -14,6 +15,9 @@ import mysql.connector
 from datetime import datetime
 from PIL import Image
 import cv2
+import csv
+import matplotlib.pyplot as plt
+
 
 # Keras 
 from keras.datasets import mnist
@@ -40,12 +44,10 @@ mycursor    = mydb.cursor()
 
 # LOAD DATA --------------------------------------------------------------
 
-# Writer Id Mapping
-dir_output          = r'/home/ccirelli2/Desktop/GSU/Fall_2019/Final_project/output' 
-file_               = r'file_writer_img_mapping.csv'
-
 # Image files
-dir_padded_files    = r'/home/ccirelli2/Desktop/GSU/Fall_2019/Final_project/data/online/lineImages_all_padded'
+dir_orig_imgs   = r'/home/ccirelli2/Desktop/GSU/Fall_2019/Final_project/data/online/lineImages_all_original/lineImages'
+
+dir_2_padded_imgs = r'/home/ccirelli2/Desktop/GSU/Fall_2019/Final_project/data/online/lineImages_all_padded'
 
 
 # DATASET METRICS ---------------------------------------------------------
@@ -59,80 +61,27 @@ Description:        - Sql tables have list of file names and author info.
 
 '''
 # Query Data / Randomly sort index (random sample, frac = 1 means return all)
-df_sample_handed    = m0.sql_query_random_sample_handedness(mydb).sample(frac=1)
+df_sample_handed    = m0.sql_query_random_sample_handedness(mydb, 250, 250).sample(frac=1)
 
-# Generate list of image as numpy arrays
-list_imgs   = m2.create_list_imgs(df_sample_handed, dir_padded_files)    
-
-
-'''
-# Sample Proportions
-n_samples   = len(df_sample_handed.index)
-n_train     = int(round(0.7 * n_samples, 0))
-n_test      = n_samples - n_train
-
-# Train / Test Split
-train       = df_sample_handed.loc[ : n_train]
-test        = df_sample_handed.loc[n_train : ]
+# Generate Train / Test Split
+X_train, y_train, X_test, y_test = m2.train_test_split(df_sample_handed, dir_2_padded_imgs)
 
 
-# Feature / Target Split
-X_train     = train.loc[:, 'full_name': 'native_language']
-y_train     = train['writing_hand']
+def simple_NN(X_train, y_train, X_test, y_test):
+    # Logging
+    print('Building simple NN.  \nFlattening n-dim arrays')
 
-y_test      = test['writing_hand']
-X_test      = test.loc[ :, 'full_name': 'native_language']
+    # Calculate Num Pixels for Flattened Image row * column)
+    num_pixels  = X_train[0].shape[0] * X_train[0].shape[1]
 
-# One Hot Encode Target
-dict_target = {'Right-handed':0, 'Left-handed':1}
-y_train     = [dict_target[y] for y in y_train]
-y_test      = [dict_target[y] for y in y_test]
-
-
-def simple_nn(x_train, y_train, x_test, y_test):
-    seed = 7
-    np.random(seed)
-
-
-    pass
-'''
+    # New Dataset
+    X_train     = [x.reshape((1, num_pixels)) for x in X_train]     
+    X_test      = [x.reshape((1, num_pixels)) for x in X_test]
+     
+    # Logging  
+    print('Reshaping process finished.\nNew Dimension => 1 by {}'.format(num_pixels))
+   
+    
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+simple_NN(X_train, y_train, X_test, y_test)

@@ -9,7 +9,7 @@
 # Python
 import os
 import pandas as pd
-
+from datetime import datetime
 
 
 # FUNCTIONS --------------------------------------------------
@@ -204,29 +204,32 @@ def insert_file_names_into_table_sql(dir_padded_files, mydb, mycursor):
 # GET SAMPLE SETS FOR TRAINING --------------------------------------------
 
 
-def sql_query_random_sample_handedness(mydb):
+def sql_query_random_sample_handedness(mydb, lim1, lim2):
     '''
     Input:      Feature, value; example 'writing_hand', 'Right-handed'
     Output:     Random sample
     '''
     # Logging
-    print('Querying handedness dataset')
+    start = datetime.now()
+    print('\nQuerying handedness dataset')
 
     sql = '''
             SELECT * FROM 
             ( SELECT * FROM file_author_img_mapping WHERE writing_hand = 'Right-handed' 
-            ORDER BY RAND() LIMIT 1025) AS Right_handed 
+            ORDER BY RAND() LIMIT {}) AS Right_handed 
             UNION 
             SELECT * FROM ( SELECT * FROM file_author_img_mapping WHERE writing_hand = 'Left-handed'
-            ORDER BY RAND() LIMIT 1025) AS Left_handed
+            ORDER BY RAND() LIMIT {}) AS Left_handed
             ;
-    '''
+    '''.format(lim1, lim2)
 
     # Return dataframe
     df = pd.read_sql(sql, mydb)
 
     # Logging
+    end = datetime.now()
     print('Query complete')
+    print('Time to completion => {}\n'.format(end-start))
 
     # Return Dataframe
     return df

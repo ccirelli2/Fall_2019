@@ -14,6 +14,7 @@ import os
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from PIL import Image
+import cv2
 
 # Project
 import module0_sql as m0
@@ -198,57 +199,29 @@ def get_max_dim(dir_parent_images):
 
 
 
-def padd_imgs(dir_original_imgs, dir_output_new_imgs, print_img_shape=False, img_show=False):
+
+
+
+
+def padd_imgs(list_path2imgs, dir_output_new_imgs, d_rows, d_cols, 
+              print_img_shape=False, img_show=False):
     '''
     Input:      directory where images are located, directory to output padded images
     Output:     None.  We're going to save the padded images to a new directory.
                 Padded images will need to have names that coincide with the 
                 mapping to out authors.
     '''
-    # List Full Path 2 Files
-    list_paths2imgs = []
-
     # Define Designed Dimensions For Padded Image
-    desired_rows    = 1400
-    desired_cols    = 3500
+    desired_rows    = d_rows
+    desired_cols    = d_cols
 
     # Template - Zero Vector Image w/ Desired Dimensions / Convert to White pixels
     np_array_zeros  = np.zeros((desired_rows, desired_cols))
     np_array_zeros[:,:]  = 255
 
 
-    # Iterate Directory of Images
-    for root, dirs, files in os.walk(dir_original_imgs):
-
-        # Iterate list of directories in dirs
-        for dir1 in dirs:
-            # Define path 2 files or sub dir
-            dir1_2imgs = root + '/' + dir1
-
-            # List Files / Folders in Directory
-            for img in os.listdir(dir1_2imgs):
-
-                # If '.tif' in file/folder in directory
-                if '.tif' in img:
-                    # then we found the underlying files / append full path to list
-                    path2img = dir1_2imgs + '/' + img
-                    list_paths2imgs.append(path2img)
-
-                # If a directory, need to go one more down
-                else:
-                    # Define next full directory
-                    dir2_2imgs  = dir1_2imgs + '/' + img
-
-                    # Iterate the next directory
-                    for img in os.listdir(dir2_2imgs):
-                        if '.tif' in img:
-                            # Append full path 2 list
-                            path2img = dir2_2imgs + '/' + img
-                            list_paths2imgs.append(path2img)
-
     # Iterate List of Full Paths to Images
-    for path2img in list_paths2imgs:
-
+    for path2img in list_path2imgs:
 
         # Open Image File
         original_img_open      = Image.open(path2img)
@@ -299,9 +272,102 @@ def padd_imgs(dir_original_imgs, dir_output_new_imgs, print_img_shape=False, img
 
 
 
+def get_all_files_in_dir(path):
+
+    # Check if path is dir or file
+    if '.' in path:
+        #print(path)
+        list_path2imgs.append(path)
+
+    else:
+        for adir in os.listdir(path):
+            get_all_files_in_dir(path + '/' + adir)
 
 
 
+def get_dict_freq_img_dims(get_all_files_in_dir):
+
+    # Get list all files
+    list_path2imgs = []
+    get_all_files_in_dir(dir_orig_imgs)
+   
+    # Dict Object Hold Frequencies
+    dict_row_dim_freq   = {}
+    dict_col_dim_freq   = {}
+
+    # DataFrame
+    df_row = pd.DataFrame({})
+    df_col = pd.DataFrame({})
+
+    # Get Dimensions of Image
+    for a_path2img in list_path2imgs:
+        img_open    = Image.open(a_path2img)
+        img_array   = np.array(img_open)
+        img_shape   = img_array.shape
+
+        # Generate Frequencies
+        dict_row_dim_freq[img_shape[0]] = dict_row_dim_freq.get(img_shape[0], 1) + 1
+        dict_col_dim_freq[img_shape[1]] = dict_col_dim_freq.get(img_shape[1], 1) + 1
+
+    # Write Row Dim 2 File  
+    df_row['Row_count'] = [x for x in dict_row_dim_freq]
+    df_row['Frequencies'] = list(dict_row_dim_freq.values())
+    df_row = df_row.sort_values(by= ['Row_count'])
+    os.chdir(r'/home/ccirelli2/Desktop/GSU/Fall_2019/Final_project/output')
+    df_row.to_excel('Row.xlsx')
+
+    # Write Col Dim 2 File
+    df_col['Col_count'] = [x for x in dict_col_dim_freq]
+    df_col['Frequencies'] = list(dict_col_dim_freq.values())
+    df_col = df_col.sort_values(by= ['Col_count'])
+    os.chdir(r'/home/ccirelli2/Desktop/GSU/Fall_2019/Final_project/output')
+    df_col.to_excel('Col.xlsx')
+
+    # Logging
+    print('finished')
+
+
+
+
+
+
+def remove_img_files_with_mxn_dims(m, n, list_path2imgs):
+    ''' 
+    Description:    Remove imgs w/ dims that are outliers before setting
+                    padding to images such that they all have the same dim
+                    Otherwise, the padding will need to be around 
+                    1200 x 3300 which will require significantly more 
+                    computation time
+
+    Imgs w/ rows    > 500
+    Imgs w/ cols    > 2100
+    '''
+    # Count of files removed
+    Count = 0 
+
+    # Iterate List of Paths2 images
+    for a_path2img in list_path2imgs:
+
+        # Read Image & Get Shape
+        img_open    = Image.open(a_path2img)
+        img_array   = np.array(img_open)
+        img_shape   = img_array.shape
+
+        if img_shape[0] > m:
+            os.remove(a_path2img)
+            print('File Removed => {}'.format(a_path2img))
+            Count +=1 
+    
+        elif img_shape[1] > n:
+            os.remove(a_path2img)
+            print('File Remove => {}'.format(a_path2img))
+            Count +=1 
+
+    # Final Log
+    print('Number of Image Files Removed = {}'.format(Count))
+
+
+    return None
 
 
 
