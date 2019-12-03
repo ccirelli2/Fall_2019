@@ -28,12 +28,17 @@ from keras.utils import np_utils
 
 
 # Function prepare Data
-def create_nparray_imgs(df, dir_padded_files):
+def create_nparray_imgs(df, dir_padded_files, feature):
     '''
     Description:    return a list of imgs as numpy matrix
                     **Note that here is where we choose how to read the img
                     Ex Color or Gray scale
-    Input           dataframe containing list of image file names.
+    Input           1.) Dataframe containing list of image file names.
+                    2.) Directory where padded files are located
+                    3.) Feature to select as target
+                        -1 = handedness
+                        -4 = gender
+
     ''' 
     # Logging
     start = datetime.now()
@@ -41,8 +46,8 @@ def create_nparray_imgs(df, dir_padded_files):
 
 
     # Create List of Images
-    list_imgs       = []
-    list_handedness = [] 
+    list_imgs           = []
+    list_feature_target = [] 
 
     # Iterate File Names
     for afile in df.itertuples():
@@ -57,11 +62,11 @@ def create_nparray_imgs(df, dir_padded_files):
         if isinstance(img_read, np.ndarray) == True:
             # Attach image to list
             list_imgs.append(img_read)
-            list_handedness.append(afile[-1])
-   
+            list_feature_target.append(afile[feature])
+
     # Convert Lists to Numpy Arrays
-    np_array_imgs       =   np.asarray(list_imgs)
-    np_array_handedness =   np.asarray(list_handedness)
+    np_array_imgs           =   np.asarray(list_imgs)
+    np_array_feature_target =   np.asarray(list_feature_target)
 
     # Logging
     end = datetime.now()
@@ -69,20 +74,21 @@ def create_nparray_imgs(df, dir_padded_files):
     print('Time to completion => {}\n'.format(start-end))
 
     # Return list (*Convert to numpy array for input to keras)
-    return  np_array_imgs, np_array_handedness 
+    return  np_array_imgs, np_array_feature_target
 
 
 
 
 
-def train_test_split(df_sample_handed, dir_padded_files):
+def train_test_split(df_sample_handed, dir_padded_files, feature):
     '''
     Input:  df_sample_handed    = Dataframe including names of images
             dir_padded_files    = directory where padded files are located
+            feature             = see function create_np_array_imgs
     Output: Tuple X_train, y_train, X_test, y_test
     '''
     # Generate list of image as numpy arrays
-    list_imgs, handedness = create_nparray_imgs(df_sample_handed, dir_padded_files)
+    list_imgs, handedness = create_nparray_imgs(df_sample_handed, dir_padded_files, feature)
 
     # Sample Proportions
     n_samples   = len(list_imgs)
@@ -90,15 +96,19 @@ def train_test_split(df_sample_handed, dir_padded_files):
     n_test      = n_samples - n_train
     
     # Convert Y To Binary Value
-    dict_target = {'Right-handed':0, 'Left-handed':1}
-    Y           = [dict_target[y] for y in handedness] 
+    if feature == -1:
+        dict_target = {'Right-handed':0, 'Left-handed':1}
+        Y           = [dict_target[y] for y in handedness] 
+    elif feature == -4:
+        dict_target = {'Male':0, 'Female':1}
+        Y           = [dict_target[y] for y in handedness] 
 
     # Training Set 
-    X_train     = list_imgs[0 : n_train]
-    y_train     = Y[0 : n_train]
+    X_train     = list_imgs[0 : n_train] 
+    y_train     = Y[0 : n_train] 
 
     # Test Set
-    X_test      = list_imgs[n_train : ]
+    X_test      = list_imgs[n_train : ] 
     y_test      = Y[n_train:  ]
 
     # Loging
@@ -108,6 +118,54 @@ def train_test_split(df_sample_handed, dir_padded_files):
   
     # Return
     return X_train, y_train, X_test, y_test
+
+
+
+
+def reshape_train_test_4_cnn(X_train, y_train, X_test, y_test):
+    ''' 
+    Description:    Reshape train/test data w/ dims [samples][channels][width][height]
+                    In  the case of a 2D image, the channel = 1
+    Input:          train, test data
+    Output:         train, test w/ new dims
+    '''
+    # Logging
+    print('Reshaping feature data for CNN insertion')
+    print('Original Shape training set => {}'.format(X_train.shape))
+
+    # Reshape
+    X_train_dim = X_train.shape
+    X_test_dim  = X_test.shape
+    X_train     = X_train.reshape(X_train_dim[0], X_train_dim[1], X_train_dim[2], 1
+                                ).astype('float32')
+    X_test      = X_test.reshape(X_test_dim[0], X_test_dim[1], X_test_dim[2], 1
+                                ).astype('float32') 
+
+    # Logging
+    print('Feature reshaping completed')
+    print('New X_train shape [num_imgs][row][col][dim]  => {}'.format(X_train.shape))
+    print('New X_test shape  [num_imgs][row][col][dim]  => {}\n'.format(X_test.shape))
+    print('Converting target to categorical variable')
+
+    # Normalize Pixel Sizes
+    X_train     /=  255
+    X_test      /=  255
+  
+    # Convert y to categorical
+    y_train     = np_utils.to_categorical(y_train)
+    y_test      = np_utils.to_categorical(y_test)
+
+    # Number of classes
+    num_classes = y_test.shape[1]
+
+    # Logging
+    print('Reshaping process completed')
+
+    return X_train, y_train, X_test, y_test
+
+
+
+
 
 
 def reshape_train_test_4_seq_nn(X_train, y_train, X_test, y_test):
@@ -140,46 +198,4 @@ def reshape_train_test_4_seq_nn(X_train, y_train, X_test, y_test):
 
     return X_train, y_train, X_test, y_test
 
-
-
-def reshape_train_test_4_cnn(X_train, y_train, X_test, y_test):
-    ''' 
-    Description:    Reshape train/test data w/ dims [samples][channels][width][height]
-                    In  the case of a 2D image, the channel = 1
-    Input:          train, test data
-    Output:         train, test w/ new dims
-    '''
-    # Logging
-    print('Reshaping feature data for CNN insertion')
-    print('Original Shape training set => {}'.format(X_train.shape))
-
-    # Reshape
-    X_train_dim = X_train.shape
-    X_test_dim  = X_test.shape
-    X_train     = X_train.reshape(X_train_dim[0], X_train_dim[1], X_train_dim[2], 1
-                                ).astype('float32')
-    X_test      = X_test.reshape(X_test_dim[0], X_test_dim[1], X_test_dim[2], 1
-                                ).astype('float32') 
-
-    # Normalize Features
-    X_train     = X_train/ 255 
-    X_test      = X_test / 255 
-
-    # Logging
-    print('Feature reshaping completed')
-    print('New X_train shape [num_imgs][row][col][dim]  => {}'.format(X_train.shape))
-    print('New X_test shape  [num_imgs][row][col][dim]  => {}\n'.format(X_test.shape))
-    print('Converting target to categorical variable')
-
-    # Convert y to categorical
-    y_train     = np_utils.to_categorical(y_train)
-    y_test      = np_utils.to_categorical(y_test)
-
-    # Number of classes
-    num_classes = y_test.shape[1]
-
-    # Logging
-    print('Reshaping process completed')
-
-    return X_train, y_train, X_test, y_test
 

@@ -397,10 +397,6 @@ def remove_img_files_with_mxn_dims(m, n, list_path2imgs):
 
 
 
-
-
-
-
 def reshape_original_images(dir_orig_imgs, dir_resized, new_size, mkdir=False):
     ''' 
     Description:        The purpose of this function is to reshape images
@@ -411,7 +407,7 @@ def reshape_original_images(dir_orig_imgs, dir_resized, new_size, mkdir=False):
     Input:              1.) Directory where the original files are located
                         2.) Name of the output directory to create and save
                             the resized images. 
-                        3.) New size = float representing new size.  Ex 0.25
+:                        3.) New size = float representing new size.  Ex 0.25
     '''
 
     # CREATE NEW DIRECTORY FOR RESIZED IMAGES ---------------------------------------
@@ -464,6 +460,12 @@ def reshape_original_images(dir_orig_imgs, dir_resized, new_size, mkdir=False):
 
     # Logging
     print('{} files written to {}'.format(Count, dir_output_resized_imgs))
+
+
+
+
+
+
 
 
 

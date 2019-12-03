@@ -236,6 +236,41 @@ def sql_query_random_sample_handedness(mydb, lim1, lim2):
 
 
 
+def sql_query_random_sample_gender(mydb, lim1, lim2):
+    '''
+    Description:    Dataset is not balanced by feature. 
+                    Female: 4013
+                    Male:   6782
+                    
+    Input:          lim1: Limit for Male    = 4000
+                    lim2: Limit for Female  = 4000
+                
+    Output:         Random balanced sample of male, female writting pieces
+    '''
+    # Logging
+    start = datetime.now()
+    print('\nQuerying handedness dataset')
+
+    sql = '''
+            SELECT * FROM 
+            ( SELECT * FROM file_author_img_mapping WHERE gender = 'Male' 
+            ORDER BY RAND() LIMIT {}) AS Male 
+            UNION 
+            SELECT * FROM ( SELECT * FROM file_author_img_mapping WHERE gender = 'Female'
+            ORDER BY RAND() LIMIT {}) AS Female
+            ;
+    '''.format(lim1, lim2)
+
+    # Return dataframe
+    df = pd.read_sql(sql, mydb)
+
+    # Logging
+    end = datetime.now()
+    print('Query complete')
+    print('Time to completion => {}\n'.format(end-start))
+
+    # Return Dataframe
+    return df
 
 
 
